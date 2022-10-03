@@ -1,0 +1,27 @@
+name: Publish on Netlify
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+jobs:
+  prod:
+    if: github.ref_name == 'main'
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v3
+      with:
+        node-version: 16
+    - name: Install Dependencies
+      run: npm install
+    - name: Build site
+      run: npm run build
+    - name: Publish to netlify (prod)
+      uses: netlify/actions/cli@master
+      with:
+        args: deploy --dir=dist --prod
+      env:
+        NETLIFY_SITE_ID: "0d9cf071-a94e-459b-8c9c-65b0d58db73a"
+        NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
